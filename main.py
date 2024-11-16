@@ -1,4 +1,9 @@
-[
+import tkinter as tk
+from tkinter import messagebox
+import json
+
+# Recipe data from the user (provided JSON data)
+recipes_data = [
     {
         "name": "spaghetti bolognese",
         "image": "https://example.com/spaghetti.jpg",
@@ -139,3 +144,56 @@
         ]
     }
 ]
+
+# Function to search for a recipe in the loaded data
+def search_recipe():
+    recipe_name = recipe_name_entry.get().strip().lower()
+    if not recipe_name:
+        messagebox.showerror("Input Error", "Please enter a recipe name.")
+        return
+    
+    recipe_found = False
+    for recipe in recipes_data:
+        if recipe["name"].lower() == recipe_name:
+            display_recipe(recipe)
+            recipe_found = True
+            break
+    
+    if not recipe_found:
+        messagebox.showerror("Recipe Not Found", f"No recipe found for '{recipe_name}'.")
+
+# Function to display the recipe in the result text box
+def display_recipe(recipe):
+    result_text.delete(1.0, tk.END)  # Clear previous results
+    result_text.insert(tk.END, f"Recipe: {recipe['name']}\n\n")
+    
+    result_text.insert(tk.END, "Ingredients:\n")
+    for ingredient in recipe["ingredients"]:
+        result_text.insert(tk.END, f"- {ingredient}\n")
+    
+    result_text.insert(tk.END, "\nProcedure:\n")
+    for step in recipe["procedure"]:
+        result_text.insert(tk.END, f"{step}\n")
+
+# Create the main window for the app
+root = tk.Tk()
+root.title("Recipe Finder")
+
+# Create and pack the widgets for the GUI
+title_label = tk.Label(root, text="Recipe Finder", font=("Arial", 20))
+title_label.pack(pady=10)
+
+search_label = tk.Label(root, text="Enter Recipe Name:", font=("Arial", 12))
+search_label.pack(pady=5)
+
+recipe_name_entry = tk.Entry(root, font=("Arial", 14), width=30)
+recipe_name_entry.pack(pady=5)
+
+search_button = tk.Button(root, text="Search", font=("Arial", 14), command=search_recipe)
+search_button.pack(pady=10)
+
+result_text = tk.Text(root, width=50, height=15, font=("Arial", 12), wrap=tk.WORD)
+result_text.pack(pady=10)
+
+# Start the Tkinter event loop
+root.mainloop()
